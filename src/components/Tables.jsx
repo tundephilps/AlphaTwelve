@@ -9,9 +9,19 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { TbDownload } from "react-icons/tb";
 import { RxDotFilled } from "react-icons/rx";
+import EventDetailsModal from "./Modal";
 
 const Tables = () => {
   const [expandedRows, setExpandedRows] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const eventData = {
+    name: "Tech Conference 2024",
+    date: "June 15-17, 2024",
+    description:
+      "Annual technology conference featuring the latest innovations.",
+    speakers: ["Speaker name A", "Speaker name B", "Speaker name C"],
+    attendees: 300,
+  };
   const tableItems = [
     {
       name: "Cloud Innovation Summit",
@@ -163,7 +173,10 @@ const Tables = () => {
             {tableItems.map((item, idx) => (
               <React.Fragment key={idx}>
                 <tr>
-                  <td className="px-6 py-4 whitespace-nowrap w-[270px] flex items-center">
+                  <td
+                    className="px-6 py-4 whitespace-nowrap w-[270px] flex items-center"
+                    onClick={() => setShowModal(true)}
+                  >
                     <button
                       className="mr-2 lg:hidden"
                       onClick={() => toggleRow(idx)}
@@ -176,6 +189,21 @@ const Tables = () => {
                     </button>
                     {item.name}
                   </td>
+                  {showModal && (
+                    <EventDetailsModal
+                      event={eventData}
+                      onClose={() => setShowModal(false)}
+                      onEdit={() => {
+                        /* Handle edit */
+                      }}
+                      onDelete={() => {
+                        /* Handle delete */
+                      }}
+                      onMarkCompleted={() => {
+                        /* Handle mark as completed */
+                      }}
+                    />
+                  )}
                   <td className="px-6 py-4 whitespace-nowrap w-[270px] lg:table-cell hidden">
                     {item.date}
                   </td>
