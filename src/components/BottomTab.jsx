@@ -6,15 +6,21 @@ import {
 } from "react-icons/ai";
 import { BsPeople, BsFileBarGraph } from "react-icons/bs";
 
+import { LuHome } from "react-icons/lu";
+import { RiUserVoiceLine } from "react-icons/ri";
+import { BsFileText } from "react-icons/bs";
+import { FaRegUserCircle } from "react-icons/fa";
+import Home from "../assets/images/home.png";
+
 const BottomTabNavigation = () => {
   const [activeTab, setActiveTab] = useState("Home");
 
   const tabs = [
-    { name: "Home", icon: AiOutlineHome },
+    { name: "Home", icon: LuHome },
     { name: "Events", icon: AiOutlineCalendar },
-    { name: "Speakers", icon: BsPeople },
-    { name: "Reports", icon: BsFileBarGraph },
-    { name: "Profile", icon: AiOutlineUser },
+    { name: "Speakers", icon: RiUserVoiceLine },
+    { name: "Reports", icon: BsFileText },
+    { name: "Profile", icon: FaRegUserCircle },
   ];
 
   return (
