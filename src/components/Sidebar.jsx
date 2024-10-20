@@ -1,4 +1,3 @@
-//import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react"
 import logo from "../assets/images/Logo.png";
 
 import Logo2 from "../assets/images/Logo2.png";
@@ -6,13 +5,25 @@ import Logo2 from "../assets/images/Logo2.png";
 import Pro from "../assets/images/Pro.png";
 import profile from "../assets/images/profile.png";
 import { createContext, useContext, useState } from "react";
-import { FiChevronDown, FiChevronsRight } from "react-icons/fi";
-import { MdCropOriginal, MdKeyboardArrowDown } from "react-icons/md";
+import {
+  MdOutlineKeyboardDoubleArrowLeft,
+  MdOutlineKeyboardDoubleArrowRight,
+} from "react-icons/md";
+
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { PiChatsCircle } from "react-icons/pi";
+import { LuHome } from "react-icons/lu";
+import { IoSettingsOutline } from "react-icons/io5";
+import Report from "../assets/images/Reports.png";
+import Speaker from "../assets/images/Speaker.png";
+
+import Events from "../assets/images/Events.png";
 
 const SidebarContext = createContext();
 
 export default function Sidebar({ children }) {
   const [expanded, setExpanded] = useState(true);
+
   return (
     <>
       <aside className="h-full hidden lg:block">
@@ -25,7 +36,6 @@ export default function Sidebar({ children }) {
               }`}
               onClick={() => setExpanded((curr) => !curr)}
             />
-
             <button
               onClick={() => setExpanded((curr) => !curr)}
               className=" rounded-lg bg-gray-50 hover:bg-gray-100"
@@ -39,13 +49,62 @@ export default function Sidebar({ children }) {
           </div>
 
           <SidebarContext.Provider value={{ expanded }}>
-            <ul className="flex-1 px-3">{children}</ul>
+            <ul className="flex-1 px-3">
+              <SidebarItem icon={<LuHome size={20} />} text="Home" active />
+              <SidebarItem
+                icon={<img src={Events} size={20} />}
+                text="Events"
+              />
+              <SidebarItem icon={<img src={Speaker} />} text="Speakers" />
+              <SidebarItem icon={<img src={Report} />} text="Reports" />
+              <SidebarItem
+                icon={<IoMdNotificationsOutline size={20} />}
+                text="Notifications"
+                notificationCount={3} // Add this line
+              />
+              <SidebarItem icon={<PiChatsCircle size={20} />} text="Messages" />
+              <SidebarItem
+                icon={<IoSettingsOutline size={20} />}
+                text="Settings"
+              />
+            </ul>
           </SidebarContext.Provider>
 
           <div
-            className={`flex mx-auto pb-8 ${expanded ? "block" : "hidden"} `}
-          ></div>
-          <div className=" flex p-3">
+            className="px-6 inline-flex items-center gap-4 cursor-pointer pt-2 text-[#334155] font-medium"
+            onClick={() => setExpanded((curr) => !curr)}
+          >
+            {expanded ? (
+              <MdOutlineKeyboardDoubleArrowLeft />
+            ) : (
+              <MdOutlineKeyboardDoubleArrowRight />
+            )}
+            <span
+              className={`overflow-hidden transition-all ${
+                expanded ? "block" : "hidden"
+              }`}
+            >
+              Collapse
+            </span>
+          </div>
+
+          <div
+            className={`overflow-hidden transition-all ${
+              expanded
+                ? "flex items-center gap-4 px-6 pt-4 cursor-pointer"
+                : "hidden"
+            }`}
+          >
+            <div
+              className={` w-10 h-6 bg-gray-200 rounded-full p-1 duration-300 ease-in-out }`}
+            >
+              <div
+                className={`bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out `}
+              ></div>
+            </div>
+            <span>Dark mode</span>
+          </div>
+          <div className=" flex p-4">
             <img src={profile} className="w-10 h-10 rounded-md" />
             <div
               className={`flex justify-between items-center overflow-hidden transition-all ${
@@ -53,12 +112,11 @@ export default function Sidebar({ children }) {
               } `}
             >
               <div className="leading-4">
-                <h4 className="font-semibold">Rudra Devi</h4>
-                <span className="text-xs text-gray-600">
+                <h4 className="font-semibold text-[#334155]">Rudra Devi</h4>
+                <span className="text-xs text-[#647488]">
                   rudra.devi@gmail.com
                 </span>
               </div>
-              <MdKeyboardArrowDown size={20} />
             </div>
           </div>
         </nav>
@@ -67,31 +125,29 @@ export default function Sidebar({ children }) {
   );
 }
 
-export function SidebarItem({ icon, text, active, alert }) {
+export function SidebarItem({ icon, text, active, alert, notificationCount }) {
   const { expanded } = useContext(SidebarContext);
   return (
     <li
       className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${
         active
-          ? "bg-[#fcf7ff] from-indigo-200 to-indigo-100 text-[#8576FF]"
-          : "hover:bg-[#fcf7ff] text-[#334155]"
+          ? "bg-[#fcf7ff] text-[#8576ff]"
+          : "hover:bg-[#fcf7ff] text-[#334155] hover:text-[#8576ff]"
       }`}
     >
       {icon}
       <span
-        className={`overflow-hidden transition-all ${
+        className={`overflow-hidden transition-all relative ${
           expanded ? "w-52 ml-3" : "w-0"
         }`}
       >
         {text}
+        {notificationCount > 0 && (
+          <div className="absolute top-1 right-1 bg-[#f43f5e]  text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            {notificationCount}
+          </div>
+        )}
       </span>
-      {alert && (
-        <div
-          className={`absolute right-2 w-2 h-2 rounded bg-indigo-400 ${
-            expanded ? "" : "top-2"
-          }`}
-        ></div>
-      )}
 
       {!expanded && (
         <div

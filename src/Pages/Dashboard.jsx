@@ -14,6 +14,7 @@ function Dashboard() {
   return (
     <div className="flex flex-row">
       <Sidebar />
+
       <MobileNavbar />
       <div className="lg:p-[20px] p-2 w-full bg-[#ffffff]">
         <div className="w-full bg-white rounded-3xl">
@@ -81,6 +82,8 @@ function Dashboard() {
           <div className="pt-8">
             <Tables />
             <Pagination />
+
+            <div className="h-[100px]" />
           </div>
         </div>
       </div>
