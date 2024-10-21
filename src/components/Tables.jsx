@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaArrowDown,
   FaChevronLeft,
@@ -14,6 +14,12 @@ import EventDetailsModal from "./Modal";
 const Tables = () => {
   const [expandedRows, setExpandedRows] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [sortBy, setSortBy] = useState("date");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [filteredItems, setFilteredItems] = useState([]);
+
   const eventData = {
     name: "Tech Conference 2024",
     date: "June 15-17, 2024",
@@ -22,6 +28,7 @@ const Tables = () => {
     speakers: ["Speaker name A", "Speaker name B", "Speaker name C"],
     attendees: 300,
   };
+
   const tableItems = [
     {
       name: "Cloud Innovation Summit",
@@ -85,11 +92,39 @@ const Tables = () => {
     },
   ];
 
+  useEffect(() => {
+    filterAndSortItems();
+  }, [searchTerm, statusFilter, sortBy, sortOrder]);
+
+  const filterAndSortItems = () => {
+    let filtered = tableItems.filter((item) => {
+      const matchesSearch =
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.speaker.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus =
+        statusFilter === "All" || item.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+
+    filtered.sort((a, b) => {
+      if (a[sortBy] < b[sortBy]) return sortOrder === "asc" ? -1 : 1;
+      if (a[sortBy] > b[sortBy]) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    setFilteredItems(filtered);
+  };
+
   const toggleRow = (idx) => {
     setExpandedRows((prev) => ({
       ...prev,
       [idx]: !prev[idx],
     }));
+  };
+
+  const handleSort = (key) => {
+    setSortBy(key);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
   const StatusButton = ({ status }) => {
@@ -117,26 +152,36 @@ const Tables = () => {
       {/* Search and Filter */}
       <div className="flex lg:flex-row flex-col items-center  justify-between w-full">
         <div className="flex lg:items-center lg:flex-row flex-col gap-2 text-[#334155] w-full">
-          <div className="h-[36px] lg:w-[200px] w-full border border-[#e2e8f0] inline-flex items-center relative   ">
+          <div className="h-[36px] lg:w-[200px] w-full border border-[#e2e8f0] inline-flex items-center relative">
             <FaSearch className="text-[#94a3b8] text-[14px] absolute left-2" />
             <input
-              className="border-none outline-none pl-8 bg-transparent"
+              className="border-none outline-none pl-8 bg-transparent w-full"
               placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="h-[36px] lg:w-[88px] w-full rounded-[2px]  border border-[#e2e8f0] inline-flex items-center justify-center gap-3">
             Date
             <RiArrowDropDownLine />
           </div>
-          <div className="h-[36px] lg:w-[99px] w-full rounded-[2px]  border border-[#e2e8f0] inline-flex items-center justify-center gap-3">
-            Status
-            <RiArrowDropDownLine />
+          <div className="h-[36px] lg:w-[99px] w-full rounded-[2px]  border border-[#e2e8f0] inline-flex items-center justify-center px-2">
+            <select
+              className="bg-transparent border-none outline-none"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="All">Status</option>
+              <option value="Completed">Completed</option>
+              <option value="In Progress">In Progress</option>
+            </select>
+            {/* <RiArrowDropDownLine /> */}
           </div>
           <div className="h-[36px] lg:w-[99px] w-full rounded-[2px]  border border-[#e2e8f0] inline-flex items-center justify-center gap-3">
             Name <RiArrowDropDownLine />
           </div>
           <p className="font-semibold text-[#334155] items-start">
-            Displaying 100 results
+            Displaying {filteredItems.length} results
           </p>
         </div>
 
@@ -144,7 +189,16 @@ const Tables = () => {
           <div className="flex flex-row  items-center justify-between  gap-2 w-full ">
             <p>Sort</p>
             <div className="h-[36px] w-[140px]  rounded-[2px]  border border-[#e2e8f0] inline-flex items-center justify-center gap-3">
-              Most Recent <RiArrowDropDownLine />
+              <select
+                className="bg-transparent border-none outline-none"
+                value={sortBy}
+                onChange={(e) => handleSort(e.target.value)}
+              >
+                <option value="date">Most Recent</option>
+                <option value="name">Event Name</option>
+                <option value="speaker">Speaker</option>
+              </select>
+              {/* <RiArrowDropDownLine /> */}
             </div>
           </div>
           <div className="flex justify-between ">
@@ -162,15 +216,32 @@ const Tables = () => {
         <table className="w-full table-auto text-sm text-left">
           <thead className="bg-[#f1f5f9] text-gray-600 font-medium border-b ">
             <tr>
-              <th className="py-3 px-6">Event Name</th>
-              <th className="py-3 px-6 lg:table-cell hidden">Date</th>
-              <th className="py-3 px-6 lg:table-cell hidden">Speaker</th>
+              <th
+                className="py-3 px-6 cursor-pointer"
+                onClick={() => handleSort("name")}
+              >
+                Event Name{" "}
+                {sortBy === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+              </th>
+              <th
+                className="py-3 px-6 lg:table-cell hidden cursor-pointer"
+                onClick={() => handleSort("date")}
+              >
+                Date {sortBy === "date" && (sortOrder === "asc" ? "▲" : "▼")}
+              </th>
+              <th
+                className="py-3 px-6 lg:table-cell hidden cursor-pointer"
+                onClick={() => handleSort("speaker")}
+              >
+                Speaker{" "}
+                {sortBy === "speaker" && (sortOrder === "asc" ? "▲" : "▼")}
+              </th>
               <th className="py-3 px-6 ">Status</th>
               <th className="py-3 px-6 lg:table-cell hidden"></th>
             </tr>
           </thead>
           <tbody className="divide-y text-[#334155] font-semibold">
-            {tableItems.map((item, idx) => (
+            {filteredItems.map((item, idx) => (
               <React.Fragment key={idx}>
                 <tr>
                   <td
